@@ -1,0 +1,27 @@
+let
+    Source = Folder.Files("C:\Users\peter\OneDrive - TrainSQL Beheer BV\Books\bpbonline\Downloads\Cource files\Chapter 5"),
+    #"Filtered Rows" = Table.SelectRows(Source, each Text.StartsWith([Name], "targets") and Text.EndsWith([Name], ".txt")),
+    #"Removed Other Columns" = Table.SelectColumns(#"Filtered Rows",{"Content", "Name"}),
+    #"Invoked Custom Function" = Table.AddColumn(#"Removed Other Columns", "Target", each GetTargets([Content])),
+    #"Expanded Target" = Table.ExpandTableColumn(#"Invoked Custom Function", "Target", {"EmployeeID", "Month", "TargetAmount"}, {"EmployeeID", "Month", "TargetAmount"}),
+    #"Split Column by Delimiter" = Table.SplitColumn(#"Expanded Target", "Name", Splitter.SplitTextByDelimiter(".", QuoteStyle.Csv), {"Name.1"}),
+    #"Split Column by Position" = Table.SplitColumn(#"Split Column by Delimiter", "Name.1", Splitter.SplitTextByPositions({0, 4}, true), {"Name.1.1", "Name.1.2"}),
+    #"Inserted Merged Column" = Table.AddColumn(#"Split Column by Position", "Date", each Text.Combine({"1-", [Month], "-", [Name.1.2]})),
+    #"Removed Other Columns1" = Table.SelectColumns(#"Inserted Merged Column",{"Date", "TargetAmount", "EmployeeID"}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Removed Other Columns1",{{"Date", type date}, {"EmployeeID", Int64.Type}, {"TargetAmount", Currency.Type}})
+in
+    #"Changed Type"
+
+
+
+
+(FileContents) =>
+let
+    Source = Csv.Document(FileContents,[Delimiter="	", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"EmployeeID", Int64.Type}, {"M1", Int64.Type}, {"M2", Int64.Type}, {"M3", Int64.Type}, {"M4", Int64.Type}, {"M5", Int64.Type}, {"M6", Int64.Type}, {"M7", Int64.Type}, {"M8", Int64.Type}, {"M9", Int64.Type}, {"M10", Int64.Type}, {"M11", Int64.Type}, {"M12", Int64.Type}}),
+    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Changed Type", {"EmployeeID"}, "Month", "TargetAmount"),
+    #"Filtered Rows" = Table.SelectRows(#"Unpivoted Other Columns", each ([TargetAmount] <> 0)),
+    #"Replaced Value" = Table.ReplaceValue(#"Filtered Rows","M","",Replacer.ReplaceText,{"Month"})
+in
+    #"Replaced Value"

@@ -1,0 +1,41 @@
+﻿Date =
+-- GENERATE create a row as defines in line 29 to 39
+-- for each row created by the CALENDAR function
+GENERATE (
+    -- Create a table with a single column [Date]
+    -- with one row for each date
+    -- starting at the 1st of January 2 years ago
+    -- ending at 31st of December of the current year
+    CALENDAR (
+        DATE ( YEAR ( TODAY () ) - 2, 1, 1 ),
+        DATE ( YEAR ( TODAY () ), 12, 31 )
+    ),
+    
+    -- Use variables to create periods from the [Date]
+    VAR CurrentDay = [Date]
+    VAR Years =
+        YEAR ( CurrentDay )
+    VAR MonthNo =
+        MONTH ( CurrentDay )
+    VAR MonthName =
+        FORMAT ( [Date], "MMMM" )
+    VAR Quarters =
+        QUARTER ( currentDay )
+    
+    -- Use the ROW function to create columns for the table
+    -- based on the periods defined in the variables
+    RETURN
+        ROW (
+            "Date", CurrentDay,
+            "Year", Years,
+            "MonthNo", MonthNo,
+            "Month Name", MonthName,
+            "Quarter", Quarters,
+            "MonthYear",
+                MonthName & ", "
+                    & FORMAT ( CurrentDay, "YYYY" ),
+            "MonthKey",
+                Years * 100 + MonthNr,
+            "QuarterYear", "Q" & Quarter
+        )
+)

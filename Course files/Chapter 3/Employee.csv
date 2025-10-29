@@ -1,0 +1,6 @@
+ID,Name,Function,Email,Salary,HireDate
+1,Peter,Boss,peter@trainsql.nl,5000.00,2020-01-12
+2,Janneke,RealBoss,janneke@trainsql.nl,4000.00,2021-02-13
+3,Jari,PretendBoss,jari@trainsql.nl,3000.00,2022-03-14
+4,Mats,Bossie,mats@trainsql.nl,2000.00,2023-04-15
+5,Lussie,HasBoss,Lussie@trainsql.nl,0.0,2022-07-01

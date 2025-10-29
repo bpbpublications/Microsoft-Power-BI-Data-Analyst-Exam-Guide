@@ -1,0 +1,10 @@
+let
+    StartDate = #date(2021,1,1),
+    NumberOfDays = Duration.Days( #date(2023,12,31) - StartDate ),
+    Dates = List.Dates(StartDate, NumberOfDays+1, #duration(1,0,0,0)),
+    #"Converted to Table" = Table.FromList(Dates, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Renamed Columns" = Table.RenameColumns(#"Converted to Table",{{"Column1", "Date"}}),
+    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"Date", type date}})
+
+in
+    #"Changed Type"

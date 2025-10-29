@@ -1,0 +1,10 @@
+(FileContents) =>
+let
+    Source = Csv.Document(FileContents,[Delimiter="	", Columns=13, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"EmployeeID", Int64.Type}, {"M1", Int64.Type}, {"M2", Int64.Type}, {"M3", Int64.Type}, {"M4", Int64.Type}, {"M5", Int64.Type}, {"M6", Int64.Type}, {"M7", Int64.Type}, {"M8", Int64.Type}, {"M9", Int64.Type}, {"M10", Int64.Type}, {"M11", Int64.Type}, {"M12", Int64.Type}}),
+    #"Unpivoted Other Columns" = Table.UnpivotOtherColumns(#"Changed Type", {"EmployeeID"}, "Month", "TargetAmount"),
+    #"Filtered Rows" = Table.SelectRows(#"Unpivoted Other Columns", each ([TargetAmount] <> 0)),
+    #"Replaced Value" = Table.ReplaceValue(#"Filtered Rows","M","",Replacer.ReplaceText,{"Month"})
+in
+    #"Replaced Value"
